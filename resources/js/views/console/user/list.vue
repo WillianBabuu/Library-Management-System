@@ -3,7 +3,6 @@
         <div class="flex flex-wrap justify-between">
             <base-console-breadcrumb showBreadcrumb="true" title='User List' linkTitle='User List'/>
             <base-btn-container>
-                <base-btn btn-color="indigo" btn-label="Add User" btn-icon="PlusIcon" @click="goToAddUser"/>
             </base-btn-container>
         </div>
         <div>
@@ -14,7 +13,6 @@
                         <tr>
                             <base-table-header>Name</base-table-header>
                             <base-table-header>Email</base-table-header>
-                            <base-table-header>Stores</base-table-header>
                             <base-table-header-end>Action</base-table-header-end>
                         </tr>
                         </thead>
@@ -22,20 +20,11 @@
                         <tr v-for="(item, indexItem) in listOfUser" :key="indexItem" :class="(indexItem % 2 == 0) ? 'bg-white':'bg-gray-50'">
                             <base-table-data>{{ item.name }}</base-table-data>
                             <base-table-data>{{ item.email }}</base-table-data>
-                            <base-table-data>
-                                <span v-for="store in item.stores" :key="store"> 
-                                    {{ store.name }}
-                                </span>
-                                <!-- <span v-else> 
-                                    Not Assigned to Store
-                                </span> -->
-                            </base-table-data>
-
                             <base-table-data :class="'text-right'">
 
                                 <base-drop-down :list-of-item="[
                                         { icon : 'TrashIcon',  description : 'Delete', okFunction: ()=>{ deleteUser(item.id); }, disabled: false, },
-                                    ]">
+                                    ]" v-if="currentUser.is_admin == 1 && currentUser.id != item.id">
                                     <base-heroicon computed-icon="DotsHorizontalIcon"/>
                                 </base-drop-down>
 
@@ -84,16 +73,23 @@
                 listOfUser: {
                     stores:[]
                 },
+                currentUser: []
             }
         },
         async created() {
-            console.log('About to get User List');
+            // console.log('About to get User List');
             await this.searchUsers();
+            await this.getUser();
         },
         methods: {
             async searchUsers() {
-                userService.searchUser({with_user_store: true}, (result)=>{
+                userService.search({}, (result)=>{
                     this.listOfUser = result.returnData.list_of_users;
+                });
+            },
+            async getUser(){
+                await userService.get({ }, (result)=>{
+                    this.currentUser = result.returnData.item;
                 });
             },
             async goToAddUser(){

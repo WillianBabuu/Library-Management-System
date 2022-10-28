@@ -17,8 +17,8 @@ class CommentDao extends BaseDao
 
     private function bindData($comment, $data) {
         if(!empty($data->book_id)) $comment->book_id = $data->book_id;
-        if(!empty($data->value)) $comment->value = $data->value;
-        if(!empty($data->item_id)) $comment->item_id = $data->item_id;
+        if(!empty($data->comment)) $comment->comment = $data->comment;
+        if(!empty($data->user_id)) $comment->user_id = $data->user_id;
         return $comment;
     }
 
@@ -43,7 +43,7 @@ class CommentDao extends BaseDao
     }
 
     public function search($id, $book_id, $limit = 0, $extra = array(), $first = false) {
-        $query = Comment::with('comment_group');
+        $query = Comment::with('user');
 
         if(!empty($id)) { $query->where('id', $id); }
 

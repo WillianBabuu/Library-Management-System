@@ -2,7 +2,7 @@
     <TransitionRoot appear :show="isOpen" as="template">
 
         <Dialog
-            :initialFocus="saveCategoryBtnRef"
+            :initialFocus="saveCommentBtnRef"
             class="fixed inset-0 overflow-hidden z-10"
             :open="isOpen" @close="setIsOpen">
 
@@ -31,43 +31,36 @@
                 <div class="flex flex-col bg-white fixed inset-y-0 right-0 w-full max-w-sm">
 
                     <div class="flex justify-between items-center p-4 shadow border-t-8 border-solid rounded border-indigo-400">
-                        <DialogTitle class="text-xl font-bold">Category Form</DialogTitle>
+                        <DialogTitle class="text-xl font-bold">Comments</DialogTitle>
                         <button class="p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="setIsOpen(false)">
                             <base-heroicon computed-icon="XIcon"/>
                         </button>
                     </div>
 
-                    <form class="flex-1 flex flex-col" @submit.prevent="saveCategory">
+                    <div  class=" p-2">
+                        <ul class="list-none">
+                            <li class="p-1"  v-for="(comment, indexItem) in listOfComments" :key="indexItem" :class="(indexItem % 2 == 0) ? 'bg-white':'bg-gray-50'">
+                                <strong>{{ comment.user.name }}:</strong> {{ comment.comment }}
+                            </li>
+                          </ul>
+                    </div>
+
+                    <form class="flex-1 flex flex-col" @submit.prevent="saveComment">
 
                         <div class="flex-1 relative">
 
-                            <div class="absolute inset-0 overflow-y-scroll  py-6 px-4">
-
+                            <div class="absolute inset-0 overflow-y-scroll  py-1 px-1">
                                 <div class="relative w-full group">
-                                    <label for="type" class="block mb-2 text-sm font-medium text-gray-800">Type</label>
-                                    <!-- <base-select-list id="type"
-                                        key-value="value" key-description="description"
-                                        :selected-item-id="form.type" v-model="form.type"
-                                        :list-of-item="listOfCategoryType" /> -->
-                                    <select v-model="form.type" class="box-border text-black placeholder-gray-400 text-sm rounded-lg bg-white border border-gray-200 border-solid rounded outline-none focus:ring-indigo-400 focus:border-indigo-400 block w-full p-2.5">
-                                        <option :value="type.value" v-for="type in listOfCategoryType" :key="type">{{ type.description }}</option>
-                                    </select>
-                                </div>
-
-                                <div class="relative w-full group">
-                                    <label for="name" class="block mb-2 text-sm font-medium text-gray-800">Name</label>
-                                    <input type="text" id="name" v-model="form.name" class="box-border text-black placeholder-gray-400
+                                    <input type="text" id="name" v-model="form.comment" class="box-border text-black placeholder-gray-400
                                 text-sm rounded-lg bg-white border border-gray-200 border-solid
                                 rounded outline-none focus:ring-indigo-400 focus:border-indigo-400 block w-full p-2.5"
                                            placeholder="name" />
                                 </div>
-
                             </div>
                         </div>
-
-                        <div class="py-6 px-4 bg-gray-50">
+                        <div class="py-1 px-1 bg-gray-50">
                             <div class="flex flex-col">
-                                <base-btn ref="saveCategoryBtnRef" btn-label="Save Category" btn-icon="SaveIcon" btn-color="indigo"/>
+                                <base-btn ref="saveCommentBtnRef" btn-label="Comment" btn-icon="SaveIcon" btn-color="indigo"/>
                             </div>
                         </div>
 
@@ -88,12 +81,11 @@
     import BaseHeroicon from "../BaseHeroicon";
     import BaseBtn from "../BaseBtn";
     import Swal from "sweetalert2";
-    import categoryService from "@services/category-service.js";
+    import commentService from "@services/comment-service.js";
     import BaseSelectList from "../BaseSelectList";
-    import CategoryType from "@models/enums/category-type";
 
     export default {
-        name: 'slide-over-dialog-category',
+        name: 'slide-over-dialog-comment',
         components: {
             BaseSelectList,
             BaseBtn,
@@ -103,23 +95,23 @@
         data() {
             return {
                 form: {
-                    id: '', form_method: '', type: 1, name: '',parent_id: 0,  description: ''
+                    id: '', form_method: '', type: 1, comment: '',book_id: 0,  description: ''
                 },
-                listOfCategoryType : Object.values(CategoryType),
-                listOfCategories: [],
+                listOfComments: [],
                 isOpen: false,
-                saveCategoryBtnRef: null
+                saveCommentBtnRef: null
             };
         },
         methods: {
-            async saveCategory() {
-                if (this.form.type != 1){
-                    this.form.type = this.form.type.value
-                }
-                categoryService.action(this.form, (results)=>{
+            async searchComments() {
+                await commentService.search({ book_id: this.form.book_id}, (result)=>{
+                    this.listOfComments = result.returnData.list_of_items;
+                });
+            },
+            async saveComment() {
+                commentService.action(this.form, (results)=>{
                     this.isOpen = false;
-                    const category = results.returnData;
-                    this.$emit("refreshCategory", category)
+                    this.$emit("refreshComment")
                     this.form = {
                         name: '',parent_id: 0,  description: ''
                     }
@@ -133,14 +125,14 @@
                         confirmButtonText: 'Okay!'
                     }).then((result) => {
                         this.isOpen = false;
-                        this.$emit("refreshCategory");
+                        this.$emit("refreshComment");
                     });
                 });
             },
-            setIsOpen(value, type) {
-                console.log(type);
+            setIsOpen(value, id) {
                 this.isOpen = value;
-                this.form.type = type;
+                this.form.book_id = id;
+                this.searchComments()
             }
         },
         created() {}

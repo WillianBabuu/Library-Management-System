@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Enum\EnumFormMethod;
-use App\Service\CompanyService;
 use App\Util\JsonResponse;
 use App\Util\LoggerUtil;
 use App\Service\UserService;
@@ -14,23 +13,26 @@ class UserController extends Controller
 {
 
     protected $userService;
-    protected $companyService;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(UserService $userService, CompanyService $companyService)
+    public function __construct(UserService $userService)
     {
         /*$this->middleware('auth:sanctum');*/
         $this->userService = $userService;
-        $this->companyService = $companyService;
     }
 
     public function get(Request $request)
     {
-        $id = $request->id;
+        
+        if ($request->id) {
+            $id = $request->id;
+        }else{
+            $id = $request->user()->id;
+        }
         $userUser = $this->userService->get($id);
 
         $returnData = null;
@@ -55,26 +57,6 @@ class UserController extends Controller
         $extraUser = array( 'company_id' => $request->current_company_id );
 
         $listOfUser = $this->userService->search($id, $name, $l, $extraUser);
-
-        $returnData = null;
-        if($listOfUser) {
-            $returnData = array(
-                'list_of_users' => $listOfUser
-            );
-        }
-        return response()->json(JsonResponse::get(JsonResponse::$OK, "List Of Users", $returnData));
-    }
-
-    public function searchUsersInCompany(Request $request)
-    {
-        $id = $request->id;
-        $name = $request->name;
-        $l = $request->l;
-        $company_id = $request->current_company_id;
-
-        $extraUser = array( 'with_user_store' => $request->with_user_store );
-
-        $listOfUser = $this->companyService->getCompanyWithUsers($company_id);
 
         $returnData = null;
         if($listOfUser) {

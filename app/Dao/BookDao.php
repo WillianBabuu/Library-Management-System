@@ -43,7 +43,7 @@ class BookDao extends BaseDao
     }
 
     public function search($id, $name, $limit = 0, $extra = array(), $first = false) {
-        $query = Book::withCount('likes')->with('user_like');
+        $query = Book::withCount('likes')->with('user_like')->withCount('comments');
 
         $select = [
             'books.*',

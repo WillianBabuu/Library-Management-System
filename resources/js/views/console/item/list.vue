@@ -25,6 +25,7 @@
                             </span>
                                 Likes
                             </base-table-header>
+                            <base-table-header>Comments</base-table-header>
                             <base-table-header>Favourite</base-table-header>
                             <base-table-header-end>Action</base-table-header-end>
                         </tr>
@@ -43,10 +44,20 @@
                                         <BaseBtnOutlineIconOnly title="Like" btnColor="red" btnIcon="HeartIcon"  @click="likeBook(book.id);" />
                                     </span>
                                     <span v-else>
+                                        
                                         <BaseBtnOutlineIconOnly title="Like" btnIcon="HeartIcon"  @click="likeBook(book.id);" />
                                     </span>
                                     <span>
                                         {{ book.likes_count }} likes
+                                    </span>
+
+                                </base-table-data>
+                                <base-table-data>
+                                    <span>
+                                        <base-btn-icon-only @click.prevent=" this.$refs.SlideOverDialogComment.setIsOpen(true, book.id, 1)" btn-icon="InboxIcon" btn-color="indigo" />
+                                    </span>
+                                    <span>
+                                        {{ book.comments_count }} comments
                                     </span>
 
                                 </base-table-data>
@@ -64,7 +75,7 @@
                                     <base-drop-down :list-of-book="[
                                         { icon : 'PencilIcon',  description : 'Edit', okFunction: ()=>{ goToEditBook(book.id); }, disabled: false, },
                                         { icon : 'TrashIcon',  description : 'Delete', okFunction: ()=>{ deleteBooks(book.id); }, disabled: false, },
-                                    ]">
+                                    ]" v-if="user.is_admin == 1">
                                         <base-heroicon computed-icon="DotsHorizontalIcon"/>
                                     </base-drop-down>
 
@@ -75,6 +86,10 @@
                     </base-table>
                         <BasePagination :pagination="allPaginationData" @paginate="searchItem" :page="paginate" />
                 </base-table-wrap>
+                <SlideOverDialogComment
+                        ref="SlideOverDialogComment"
+                        @refreshComment="searchItem"
+                    />
             </div>
         </div>
     </console-layout>
@@ -96,12 +111,15 @@
     import BaseDropDown from "@components/BaseDropDown";
     import uiService from "@services/ui-service.js";
     import itemService from "@services/item-service.js";
+    import userService from "@services/user-service.js";
     import BasePagination from "@components/BasePagination.vue";
+    import SlideOverDialogComment from "@components/slide-over-dialog/SlideOverDialogComment";
+    import BaseBtnIconOnly from "@components/BaseBtnIconOnly";
 
     export default {
         name: 'item-list',
         components: {
-    BaseHeroicon,
+    BaseHeroicon, BaseBtnIconOnly,
     BaseDropDown,
     BaseTableHeaderEnd,
     BaseTableData,
@@ -113,7 +131,7 @@
     BaseConsoleBreadcrumb,
     BaseTableNoResultsFound,
     ConsoleLayout,
-    BasePagination,BaseBtnOutlineIconOnly
+    BasePagination,BaseBtnOutlineIconOnly, SlideOverDialogComment
 },
         data() {
             return {
@@ -121,6 +139,7 @@
                 allPaginationData:[],
                 paginate: 10,
                 current_page: 1,
+                user: [],
                 form: {
                     id : ''
                 },
@@ -130,8 +149,14 @@
         async created() {
             // console.log('About to get Book List');
             await this.searchItem();
+            await this.getUser();
         },
         methods: {
+            async getUser(){
+                await userService.get({ }, (result)=>{
+                    this.user = result.returnData.item;
+                });
+            },
             async sortByFavourite(){
                 this.popular = !this.popular
                 this.searchItem()

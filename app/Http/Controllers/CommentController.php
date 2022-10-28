@@ -48,7 +48,7 @@ class CommentController extends Controller
         $id = $request->id;
         $book_id = $request->book_id;
         $l = $request->l;
-
+       
         $extraComment = array();
 
         $listOfComment = $this->commentService->search($id, $book_id, $l, $extraComment);
@@ -76,7 +76,7 @@ class CommentController extends Controller
             }
 
             $formMethod = $request->form_method;
-
+            $request->user_id = $request->user()->id;
             if($formMethod === EnumFormMethod::get('UPDATE/value')){
                 $id = $request->id;
                 $comment = $this->commentService->update($request, $id);

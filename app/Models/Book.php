@@ -13,6 +13,10 @@ class Book extends Model
         return $this->hasMany(Like::class);
     }
 
+    public function comments(){
+        return $this->hasMany(Comment::class);
+    }
+
     public function user_like(){
         return $this->belongsToMany(User::class, 'likes','book_id','user_id');
     }

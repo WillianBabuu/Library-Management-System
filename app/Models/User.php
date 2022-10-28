@@ -42,15 +42,5 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function roles(){
-        return $this->belongsToMany(Role::class)->withTimestamps();
-    }
 
-    public function companies(){
-        return $this->belongsToMany(Company::class);
-    }
-
-    public function stores(){
-        return $this->belongsToMany(Store::class)->withTimestamps();
-    }
 }

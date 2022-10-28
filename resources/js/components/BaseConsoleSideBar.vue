@@ -93,6 +93,7 @@
                         header: '',
                         menus: [
                             { href: '/', page: 'item-list', label: 'Items', icon: 'StarIcon', },
+                            { href: '/', page: 'user-list', label: 'User', icon: 'UserIcon', },
                         ],
                     },
                 ],
