@@ -1,0 +1,50 @@
+# For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection) or
+# paste cURL into the file and request will be converted to HTTP Request format.
+#
+# Following HTTP Request Live Templates are available:
+# * 'gtrp' and 'gtr' create a GET request with or without query parameters;
+# * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
+# * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
+
+GET http://localhost:8000/api/item/list?name=tech
+Accept: application/json
+
+###
+
+GET http://localhost:8000/api/item/get?id=1
+Accept: application/json
+
+###
+
+POST http://localhost:8000/api/item/action
+Content-Type: application/json
+
+{
+  "name": "Pepsi",
+  "barcode": "11111111",
+  "category_id": 1,
+  "company_id": 1,
+  "reorder_level": 5,
+  "has_multiple_pricelist": 0,
+  "has_packs": 0,
+  "has_attributes": 0,
+  "can_be_sold": 0,
+  "can_be_purchased": 0,
+  "can_expire": 0,
+  "removed": 1,
+  "description": "Truebits Technologies",
+  "created_by": 1,
+  "modified_by": 1
+}
+### SAVE
+
+POST http://localhost:8000/api/item/action
+Content-Type: application/json
+
+{
+  "id": 1,
+  "form_method": "update",
+  "description": "Truebits Technologies is the most valuable item in Tanzania"
+}
+
+### UPDATE
