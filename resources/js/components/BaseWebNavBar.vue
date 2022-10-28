@@ -17,14 +17,14 @@
             </div>
 
             <nav :class="{'flex': open, 'hidden': !open}" class="flex-col items-center flex-grow hidden pb-4 border-blue-600 md:pb-0 md:flex md:justify-end md:flex-row lg:border-l-2 lg:pl-2">
-                <router-link :to="{ name: 'about-us' }"
+                <!-- <router-link :to="{ name: 'about-us' }"
                              class="px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline">
                     About
                 </router-link>
                 <router-link :to="{ name: 'contact-us' }"
                              class="px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline">
                     Contact
-                </router-link>
+                </router-link> -->
                 <!--<router-link :to="{ name: 'dashboard' }"
                              class="px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline">
                     Dashboard
