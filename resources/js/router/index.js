@@ -36,7 +36,7 @@ router.beforeEach((to, from, next) => {
     if (to.meta.isProtected && !CurrentUserStore.state.user.token) {
         next({ name: "login" });
     } else if (to.name === "login" && CurrentUserStore.state.user.token) {
-        next({ name: "dashboard" });
+        next({ name: "item-list" });
     }
     /*else if (CurrentUserStore.state.user.token && to.meta.isGuest) {
            next({ name: 'Dashboard' })
