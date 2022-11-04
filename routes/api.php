@@ -27,6 +27,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout']);
 //PROTECTED ROUTE
 Route::post('/faker/action', [FakerController::class, 'action'])->name('book-action');
+Route::get('/book/list', [BookController::class, 'search'])->name('book-list');
 Route::middleware('auth:sanctum')->group(function (){
 
     //User route
@@ -39,7 +40,6 @@ Route::middleware('auth:sanctum')->group(function (){
     
 
     // Book
-    Route::get('/book/list', [BookController::class, 'search'])->name('book-list');
     Route::get('/book/get', [BookController::class, 'get'])->name('book-get');
     Route::post('/book/like', [BookController::class, 'like'])->name('book-like');
     Route::post('/book/favourite', [BookController::class, 'favourite'])->name('book-favourite');
